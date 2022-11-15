@@ -21,10 +21,10 @@ var _ = Describe("Config", func() {
 		azBlobstore.Put(file, "target/file.txt")
 
 		Expect(storageClient.UploadCallCount()).To(Equal(1))
-		_, fileToUpload, destination, _ := storageClient.UploadArgsForCall(0)
+		sourceFile, destPath := storageClient.UploadArgsForCall(0)
 
-		Expect(fileToUpload).To(Equal(file))
-		Expect(destination).To(Equal("target/file.txt"))
+		Expect(sourceFile).To(Equal(file))
+		Expect(destPath).To(Equal("target/file.txt"))
 	})
 
 })

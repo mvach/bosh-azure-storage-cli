@@ -55,6 +55,7 @@ func main() {
 		}
 
 		defer sourceFile.Close()
+
 		err = azBlobstore.Put(sourceFile, dst)
 
 	default:

@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"os"
 )
 
@@ -15,7 +14,7 @@ func New(storageClient StorageClient) (AzBlobstore, error) {
 
 func (client *AzBlobstore) Put(sourceFile *os.File, destPath string) error {
 
-	_, err := client.storageClient.Upload(context.Background(), sourceFile, destPath, nil)
+	_, err := client.storageClient.Upload(sourceFile, destPath)
 
 	return err
 }
