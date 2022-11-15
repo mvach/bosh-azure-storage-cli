@@ -11,7 +11,7 @@ type StorageClient interface {
 	Upload(
 		context context.Context,
 		body io.ReadSeekCloser,
-		options *blockblob.UploadOptions) (blockblob.UploadResponse, error)
+		options *blockblob.UploadOptions) (StorageResponse, error)
 }
 
 type DefaultStorageClient struct {
@@ -25,8 +25,21 @@ func NewStorageClient(azClient blockblob.Client) (StorageClient, error) {
 func (dsc DefaultStorageClient) Upload(
 	context context.Context,
 	body io.ReadSeekCloser,
-	options *blockblob.UploadOptions) (blockblob.UploadResponse, error) {
+	options *blockblob.UploadOptions) (StorageResponse, error) {
 
-	response, err := dsc.azClient.Upload(context, body, options)
-	return response, err
+	resp, err := dsc.azClient.Upload(context, body, options)
+
+	return StorageResponse{
+		ClientRequestID:     resp.ClientRequestID,
+		ContentMD5:          resp.ContentMD5,
+		Date:                resp.Date,
+		ETag:                resp.ETag,
+		EncryptionKeySHA256: resp.EncryptionKeySHA256,
+		EncryptionScope:     resp.EncryptionScope,
+		IsServerEncrypted:   resp.IsServerEncrypted,
+		LastModified:        resp.LastModified,
+		RequestID:           resp.RequestID,
+		Version:             resp.Version,
+		VersionID:           resp.VersionID,
+	}, err
 }
