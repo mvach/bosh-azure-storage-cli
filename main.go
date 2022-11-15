@@ -24,12 +24,12 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	azClient, err := client.NewAZClient(azConfig)
+	storageClient, err := client.NewStorageClient(azConfig)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	azBlobstore, err := client.New(azClient, &azConfig)
+	azBlobstore, err := client.New(storageClient)
 	if err != nil {
 		log.Fatalln(err)
 	}

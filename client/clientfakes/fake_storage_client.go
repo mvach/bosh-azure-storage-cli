@@ -11,12 +11,13 @@ import (
 )
 
 type FakeStorageClient struct {
-	UploadStub        func(context.Context, io.ReadSeekCloser, *blockblob.UploadOptions) (client.StorageResponse, error)
+	UploadStub        func(context.Context, io.ReadSeekCloser, string, *blockblob.UploadOptions) (client.StorageResponse, error)
 	uploadMutex       sync.RWMutex
 	uploadArgsForCall []struct {
 		arg1 context.Context
 		arg2 io.ReadSeekCloser
-		arg3 *blockblob.UploadOptions
+		arg3 string
+		arg4 *blockblob.UploadOptions
 	}
 	uploadReturns struct {
 		result1 client.StorageResponse
@@ -30,20 +31,21 @@ type FakeStorageClient struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeStorageClient) Upload(arg1 context.Context, arg2 io.ReadSeekCloser, arg3 *blockblob.UploadOptions) (client.StorageResponse, error) {
+func (fake *FakeStorageClient) Upload(arg1 context.Context, arg2 io.ReadSeekCloser, arg3 string, arg4 *blockblob.UploadOptions) (client.StorageResponse, error) {
 	fake.uploadMutex.Lock()
 	ret, specificReturn := fake.uploadReturnsOnCall[len(fake.uploadArgsForCall)]
 	fake.uploadArgsForCall = append(fake.uploadArgsForCall, struct {
 		arg1 context.Context
 		arg2 io.ReadSeekCloser
-		arg3 *blockblob.UploadOptions
-	}{arg1, arg2, arg3})
+		arg3 string
+		arg4 *blockblob.UploadOptions
+	}{arg1, arg2, arg3, arg4})
 	stub := fake.UploadStub
 	fakeReturns := fake.uploadReturns
-	fake.recordInvocation("Upload", []interface{}{arg1, arg2, arg3})
+	fake.recordInvocation("Upload", []interface{}{arg1, arg2, arg3, arg4})
 	fake.uploadMutex.Unlock()
 	if stub != nil {
-		return stub(arg1, arg2, arg3)
+		return stub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -57,17 +59,17 @@ func (fake *FakeStorageClient) UploadCallCount() int {
 	return len(fake.uploadArgsForCall)
 }
 
-func (fake *FakeStorageClient) UploadCalls(stub func(context.Context, io.ReadSeekCloser, *blockblob.UploadOptions) (client.StorageResponse, error)) {
+func (fake *FakeStorageClient) UploadCalls(stub func(context.Context, io.ReadSeekCloser, string, *blockblob.UploadOptions) (client.StorageResponse, error)) {
 	fake.uploadMutex.Lock()
 	defer fake.uploadMutex.Unlock()
 	fake.UploadStub = stub
 }
 
-func (fake *FakeStorageClient) UploadArgsForCall(i int) (context.Context, io.ReadSeekCloser, *blockblob.UploadOptions) {
+func (fake *FakeStorageClient) UploadArgsForCall(i int) (context.Context, io.ReadSeekCloser, string, *blockblob.UploadOptions) {
 	fake.uploadMutex.RLock()
 	defer fake.uploadMutex.RUnlock()
 	argsForCall := fake.uploadArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
 func (fake *FakeStorageClient) UploadReturns(result1 client.StorageResponse, result2 error) {

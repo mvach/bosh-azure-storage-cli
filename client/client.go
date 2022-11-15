@@ -13,9 +13,9 @@ func New(storageClient StorageClient) (AzBlobstore, error) {
 	return AzBlobstore{storageClient: storageClient}, nil
 }
 
-func (client *AzBlobstore) Put(file *os.File, dest string) error {
+func (client *AzBlobstore) Put(sourceFile *os.File, destPath string) error {
 
-	_, err := client.storageClient.Upload(context.Background(), file, nil)
+	_, err := client.storageClient.Upload(context.Background(), sourceFile, destPath, nil)
 
 	return err
 }

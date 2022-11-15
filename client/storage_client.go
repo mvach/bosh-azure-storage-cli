@@ -2,7 +2,10 @@ package client
 
 import (
 	"context"
+	"fmt"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/blockblob"
+	"github.com/mvach/bosh-azure-storage-cli/config"
 	"io"
 )
 
@@ -10,24 +13,41 @@ import (
 type StorageClient interface {
 	Upload(
 		context context.Context,
-		body io.ReadSeekCloser,
+		sourceFile io.ReadSeekCloser,
+		destPath string,
 		options *blockblob.UploadOptions) (StorageResponse, error)
 }
 
 type DefaultStorageClient struct {
-	azClient blockblob.Client
+	credential *azblob.SharedKeyCredential
+	serviceURL string
 }
 
-func NewStorageClient(azClient blockblob.Client) (StorageClient, error) {
-	return DefaultStorageClient{azClient: azClient}, nil
+func NewStorageClient(storageConfig config.AZStorageConfig) (StorageClient, error) {
+	credential, err := azblob.NewSharedKeyCredential(storageConfig.AccountName, storageConfig.AccountKey)
+	if err != nil {
+		return nil, err
+	}
+
+	serviceURL := fmt.Sprintf("https://%s.blob.core.windows.net/", storageConfig.AccountName)
+
+	return DefaultStorageClient{credential: credential, serviceURL: serviceURL}, nil
 }
 
 func (dsc DefaultStorageClient) Upload(
 	context context.Context,
-	body io.ReadSeekCloser,
+	sourceFile io.ReadSeekCloser,
+	destPath string,
 	options *blockblob.UploadOptions) (StorageResponse, error) {
 
-	resp, err := dsc.azClient.Upload(context, body, options)
+	blobURL := fmt.Sprintf("https://%s.blob.core.windows.net/%s", dsc.serviceURL, destPath)
+
+	client, err := blockblob.NewClientWithSharedKeyCredential(blobURL, dsc.credential, nil)
+	if err != nil {
+		return StorageResponse{}, err
+	}
+
+	resp, err := client.Upload(context, sourceFile, options)
 
 	return StorageResponse{
 		ClientRequestID:     resp.ClientRequestID,
