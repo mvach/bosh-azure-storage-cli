@@ -73,6 +73,13 @@ func main() {
 		defer dstFile.Close()
 		err = blobstoreClient.Get(src, dstFile)
 
+	case "delete":
+		if len(nonFlagArgs) != 2 {
+			log.Fatalf("Delete method expected 2 arguments got %d\n", len(nonFlagArgs))
+		}
+
+		err = blobstoreClient.Delete(nonFlagArgs[1])
+
 	default:
 		log.Fatalf("unknown command: '%s'\n", cmd)
 	}
