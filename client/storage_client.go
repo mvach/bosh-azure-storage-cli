@@ -27,6 +27,10 @@ type StorageClient interface {
 	Delete(
 		dest string,
 	) (StorageDeleteResponse, error)
+
+	Exists(
+		dest string,
+	) (StorageDeleteResponse, error)
 }
 
 type DefaultStorageClient struct {
@@ -100,6 +104,28 @@ func (dsc DefaultStorageClient) Delete(
 	blobURL := fmt.Sprintf("%s/%s", dsc.serviceURL, dest)
 
 	log.Println(fmt.Sprintf("Deleting %s", blobURL))
+	client, err := blockblob.NewClientWithSharedKeyCredential(blobURL, dsc.credential, nil)
+	if err != nil {
+		return StorageDeleteResponse{}, err
+	}
+
+	resp, err := client.Delete(context.Background(), nil)
+
+	return StorageDeleteResponse{
+		ClientRequestID: resp.ClientRequestID,
+		Date:            resp.Date,
+		RequestID:       resp.RequestID,
+		Version:         resp.Version,
+	}, err
+}
+
+func (dsc DefaultStorageClient) Exists(
+	dest string,
+) (StorageDeleteResponse, error) {
+
+	blobURL := fmt.Sprintf("%s/%s", dsc.serviceURL, dest)
+
+	log.Println(fmt.Sprintf("Checking if blob: %s exists", blobURL))
 	client, err := blockblob.NewClientWithSharedKeyCredential(blobURL, dsc.credential, nil)
 	if err != nil {
 		return StorageDeleteResponse{}, err

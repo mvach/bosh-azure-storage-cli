@@ -32,3 +32,10 @@ func (client *AzBlobstore) Delete(dest string) error {
 
 	return err
 }
+
+func (client *AzBlobstore) Exists(dest string) error {
+
+	_, err := client.storageClient.Exists(dest)
+
+	return err
+}

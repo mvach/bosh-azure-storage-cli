@@ -90,6 +90,20 @@ func main() {
 			log.Fatalln(err)
 		}
 
+	case "exists":
+		if len(nonFlagArgs) != 2 {
+			log.Fatalf("Exists method expected 2 arguments got %d\n", len(nonFlagArgs))
+		}
+
+		var exists bool
+		exists, err = blobstoreClient.Exists(nonFlagArgs[1])
+
+		// If the object exists the exit status is 0, otherwise it is 3
+		// We are using `3` since `1` and `2` have special meanings
+		if err == nil && !exists {
+			os.Exit(3)
+		}
+
 	default:
 		log.Fatalf("unknown command: '%s'\n", cmd)
 	}
