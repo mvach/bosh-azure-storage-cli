@@ -57,6 +57,9 @@ func main() {
 		defer sourceFile.Close()
 
 		err = blobstoreClient.Put(sourceFile, dst)
+		if err != nil {
+			log.Fatalln(err)
+		}
 
 	case "get":
 		if len(nonFlagArgs) != 3 {
@@ -71,7 +74,11 @@ func main() {
 		}
 
 		defer dstFile.Close()
+
 		err = blobstoreClient.Get(src, dstFile)
+		if err != nil {
+			log.Fatalln(err)
+		}
 
 	case "delete":
 		if len(nonFlagArgs) != 2 {
@@ -79,6 +86,9 @@ func main() {
 		}
 
 		err = blobstoreClient.Delete(nonFlagArgs[1])
+		if err != nil {
+			log.Fatalln(err)
+		}
 
 	default:
 		log.Fatalf("unknown command: '%s'\n", cmd)
