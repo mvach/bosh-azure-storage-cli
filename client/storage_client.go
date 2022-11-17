@@ -130,7 +130,7 @@ func (dsc DefaultStorageClient) Exists(
 	log.Println(fmt.Sprintf("Checking if blob: %s exists", blobURL))
 	client, err := blockblob.NewClientWithSharedKeyCredential(blobURL, dsc.credential, nil)
 	if err != nil {
-		return blob.Unknown, err
+		return blob.ExistenceUnknown, err
 	}
 
 	_, err = client.BlobClient().GetProperties(context.Background(), nil)
@@ -138,8 +138,8 @@ func (dsc DefaultStorageClient) Exists(
 		return blob.NotExisting, nil
 	}
 	if err != nil {
-		return blob.Unknown, err
+		return blob.ExistenceUnknown, err
 	}
 
-	return blob.Exists, nil
+	return blob.Existing, nil
 }

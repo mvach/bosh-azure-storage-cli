@@ -3,7 +3,7 @@ package blob
 type ExistenceState int64
 
 const (
-	Exists      ExistenceState = 0
-	NotExisting                = 1
-	Unknown                    = 2
+	Existing         ExistenceState = 0
+	NotExisting                     = 1
+	ExistenceUnknown                = 2
 )

@@ -1,6 +1,8 @@
 package client_test
 
 import (
+	"errors"
+	"github.com/mvach/bosh-azure-storage-cli/blob"
 	"github.com/mvach/bosh-azure-storage-cli/client"
 	"github.com/mvach/bosh-azure-storage-cli/client/clientfakes"
 	. "github.com/onsi/ginkgo/v2"
@@ -58,18 +60,45 @@ var _ = Describe("Client", func() {
 		Expect(dest).To(Equal("blob"))
 	})
 
-	It("checks the blob existence", func() {
-		storageClient := clientfakes.FakeStorageClient{}
+	Context("if the blob existence is checked", func() {
+		It("returns blob.Existing on success", func() {
+			storageClient := clientfakes.FakeStorageClient{}
+			storageClient.ExistsReturns(blob.Existing, nil)
 
-		azBlobstore, err := client.New(&storageClient)
-		Expect(err).ToNot(HaveOccurred())
+			azBlobstore, _ := client.New(&storageClient)
+			existsState, err := azBlobstore.Exists("blob")
+			Expect(existsState == blob.Existing).To(BeTrue())
+			Expect(err).ToNot(HaveOccurred())
 
-		azBlobstore.Exists("blob")
+			dest := storageClient.ExistsArgsForCall(0)
+			Expect(dest).To(Equal("blob"))
+		})
 
-		Expect(storageClient.ExistsCallCount()).To(Equal(1))
-		dest := storageClient.ExistsArgsForCall(0)
+		It("returns blob.NotExisting for not existing blobs", func() {
+			storageClient := clientfakes.FakeStorageClient{}
+			storageClient.ExistsReturns(blob.NotExisting, nil)
 
-		Expect(dest).To(Equal("blob"))
+			azBlobstore, _ := client.New(&storageClient)
+			existsState, err := azBlobstore.Exists("blob")
+			Expect(existsState == blob.NotExisting).To(BeTrue())
+			Expect(err).ToNot(HaveOccurred())
+
+			dest := storageClient.ExistsArgsForCall(0)
+			Expect(dest).To(Equal("blob"))
+		})
+
+		It("returns blob.ExistenceUnknown and an error in case an error occured", func() {
+			storageClient := clientfakes.FakeStorageClient{}
+			storageClient.ExistsReturns(blob.ExistenceUnknown, errors.New("booom"))
+
+			azBlobstore, _ := client.New(&storageClient)
+			existsState, err := azBlobstore.Exists("blob")
+			Expect(existsState == blob.ExistenceUnknown).To(BeTrue())
+			Expect(err).To(HaveOccurred())
+
+			dest := storageClient.ExistsArgsForCall(0)
+			Expect(dest).To(Equal("blob"))
+		})
 	})
 
 })

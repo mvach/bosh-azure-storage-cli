@@ -93,7 +93,7 @@ func main() {
 
 	case "exists":
 		if len(nonFlagArgs) != 2 {
-			log.Fatalf("Exists method expected 2 arguments got %d\n", len(nonFlagArgs))
+			log.Fatalf("Existing method expected 2 arguments got %d\n", len(nonFlagArgs))
 		}
 
 		existsState, err := blobstoreClient.Exists(nonFlagArgs[1])

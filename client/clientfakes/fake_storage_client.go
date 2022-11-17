@@ -206,7 +206,7 @@ func (fake *FakeStorageClient) Exists(arg1 string) (blob.ExistenceState, error) 
 	}{arg1})
 	stub := fake.ExistsStub
 	fakeReturns := fake.existsReturns
-	fake.recordInvocation("Exists", []interface{}{arg1})
+	fake.recordInvocation("Existing", []interface{}{arg1})
 	fake.existsMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
