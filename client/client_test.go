@@ -58,4 +58,18 @@ var _ = Describe("Client", func() {
 		Expect(dest).To(Equal("blob"))
 	})
 
+	It("checks the blob existence", func() {
+		storageClient := clientfakes.FakeStorageClient{}
+
+		azBlobstore, err := client.New(&storageClient)
+		Expect(err).ToNot(HaveOccurred())
+
+		azBlobstore.Exists("blob")
+
+		Expect(storageClient.ExistsCallCount()).To(Equal(1))
+		dest := storageClient.ExistsArgsForCall(0)
+
+		Expect(dest).To(Equal("blob"))
+	})
+
 })

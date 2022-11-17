@@ -1,6 +1,7 @@
 package client
 
 import (
+	"github.com/mvach/bosh-azure-storage-cli/blob"
 	"os"
 )
 
@@ -33,9 +34,9 @@ func (client *AzBlobstore) Delete(dest string) error {
 	return err
 }
 
-func (client *AzBlobstore) Exists(dest string) error {
+func (client *AzBlobstore) Exists(dest string) (blob.ExistenceState, error) {
 
-	_, err := client.storageClient.Exists(dest)
+	result, err := client.storageClient.Exists(dest)
 
-	return err
+	return result, err
 }

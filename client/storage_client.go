@@ -3,9 +3,11 @@ package client
 import (
 	"context"
 	"fmt"
+	"github.com/mvach/bosh-azure-storage-cli/blob"
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/blockblob"
@@ -30,7 +32,7 @@ type StorageClient interface {
 
 	Exists(
 		dest string,
-	) (StorageDeleteResponse, error)
+	) (blob.ExistenceState, error)
 }
 
 type DefaultStorageClient struct {
@@ -121,22 +123,23 @@ func (dsc DefaultStorageClient) Delete(
 
 func (dsc DefaultStorageClient) Exists(
 	dest string,
-) (StorageDeleteResponse, error) {
+) (blob.ExistenceState, error) {
 
 	blobURL := fmt.Sprintf("%s/%s", dsc.serviceURL, dest)
 
 	log.Println(fmt.Sprintf("Checking if blob: %s exists", blobURL))
 	client, err := blockblob.NewClientWithSharedKeyCredential(blobURL, dsc.credential, nil)
 	if err != nil {
-		return StorageDeleteResponse{}, err
+		return blob.Unknown, err
 	}
 
-	resp, err := client.Delete(context.Background(), nil)
+	_, err = client.BlobClient().GetProperties(context.Background(), nil)
+	if strings.Contains(err.Error(), "RESPONSE 404") {
+		return blob.NotExisting, nil
+	}
+	if err != nil {
+		return blob.Unknown, err
+	}
 
-	return StorageDeleteResponse{
-		ClientRequestID: resp.ClientRequestID,
-		Date:            resp.Date,
-		RequestID:       resp.RequestID,
-		Version:         resp.Version,
-	}, err
+	return blob.Exists, nil
 }
