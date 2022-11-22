@@ -2,15 +2,19 @@ package main
 
 import (
 	"flag"
-	"github.com/mvach/bosh-azure-storage-cli/blob"
 	"log"
 	"os"
+
+	"github.com/mvach/bosh-azure-storage-cli/blob"
+	"github.com/mvach/bosh-azure-storage-cli/cmd"
 
 	"github.com/mvach/bosh-azure-storage-cli/client"
 	"github.com/mvach/bosh-azure-storage-cli/config"
 )
 
 func main() {
+
+	cmd.Execute()
 
 	configPath := flag.String("c", "", "configuration path")
 	flag.Parse()
