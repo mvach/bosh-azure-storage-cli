@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"github.com/mvach/bosh-azure-storage-cli/blob"
 	"os"
 	"strings"
@@ -43,12 +44,10 @@ func (client *AzBlobstore) Exists(dest string) (blob.ExistenceState, error) {
 
 func (client *AzBlobstore) Sign(dest string, action string, expiration time.Duration) (string, error) {
 	action = strings.ToUpper(action)
-	//switch action {
-	//case "GET":
-	return client.storageClient.SignedUrl(dest, expiration)
-	//case "PUT":
-	//	return client.storageClient.putSigned(objectID, expiration)
-	//default:
-	//	return "", fmt.Errorf("action not implemented: %s", action)
-	//}
+	switch action {
+	case "GET":
+		return client.storageClient.SignedUrl(dest, expiration)
+	default:
+		return "", fmt.Errorf("action not implemented: %s", action)
+	}
 }
