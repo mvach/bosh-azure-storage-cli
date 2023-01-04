@@ -37,3 +37,14 @@ Given a JSON config file (`config.json`)...
 # Create a self-signed url for s blob in the blobstore.
 ./bosh-azure-storage-cli -c config.json sign <remote-blob> <get|put> <seconds-to-expiration>
 ```
+
+## Running integration tests
+
+To run the integration tests:
+- Export the following variables into your environment:
+  ```
+  export ACCOUNT_NAME=<your Azure accounnt name>
+  export ACCOUNT_KEY=<your Azure account key>
+  export CONTAINER_NAME=<the target container name>
+  ```
+- Run `go run github.com/onsi/ginkgo/ginkgo -r  integration/`
